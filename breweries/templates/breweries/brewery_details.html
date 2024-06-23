@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <title>Brewery Review System</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <div class="title">{{ result.name }}</div>
+        <div class="welcome-logout">
+            <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
+        </div>
+    </header>
+    <main>
+        <div class="brewery-details-container">
+            <h1>{{ result.name }}</h1>
+            <p><strong>Type:</strong> {{ result.brewery_type }}</p>
+            <p><strong>City:</strong> {{ result.city }}</p>
+            <p><strong>State:</strong> {{ result.state }}</p>
+            <p><strong>Country:</strong> {{ result.country }}</p>
+            <p><strong>Website:</strong> <a href="{{ result.website_url }}" target="_blank">{{ result.website_url }}</a></p>
+            <p><strong>Phone:</strong> {{ result.phone }}</p>
+
+            <h2>Reviews</h2>
+            {% for review in reviews %}
+                <div class="review">
+                    <p><strong>{{ review.user.username }}</strong> rated it <strong>{{ review.rating }}/5</strong></p>
+                    <p>{{ review.review }}</p>
+                    <p><small>{{ review.created_at }}</small></p>
+                </div>
+            {% endfor %}
+
+            <h2>Add a Review</h2>
+            {% if error_message %}
+                <p style="color: red;">{{ error_message }}</p>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                <label for="rating">Rating (1-5):</label>
+                <input type="number" id="rating" name="rating" min="1" max="5" required><br>
+                <label for="review">Review Comment:</label><br>
+                <textarea id="review" name="review" rows="4" cols="50" required></textarea><br>
+                <button type="submit">Submit</button>
+            </form>
+
+        </div>
+    </main>
+</body>
+</html>

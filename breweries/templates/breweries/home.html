@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brewery Review System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <div class="title">Brewery Review System</div>
+        <div class="welcome">
+            Welcome, <span id="username">{{username}}</span>
+            <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
+        </div>
+    </header>
+    <main>
+        <div class="search-container">
+            <form action="{% url 'home' %}" method="get">
+                <input type="text" name="query" id="search" placeholder="Search Breweries" Required>
+                <select name="type" id="type">
+                    <option value="by_name">Name</option>
+                    <option value="by_city">City</option>
+                    <option value="by_type">Type</option>
+                </select>
+                <button type="submit" id="search-button">Search</button>
+            </form>
+            
+        </div>
+
+        {% if results != "blank" %}
+        <div class="results-container">
+            {% if results %}
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Phone No</th>
+                            <th>Website</th>
+                            <th>City, State</th>
+                            <th>Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for brewery in results %}
+                        <!-- <tr onclick="window.location='{% url 'brewery_details' brewery.id %}';"> -->
+                        <tr data-url="{% url 'brewery_details' brewery.id %}">
+                            <td>{{ brewery.name }}</td>
+                            <td>{{ brewery.address_1 }}</td>
+                            <td>{{ brewery.phone }}</td>
+                            <td>{{ brewery.website_url }}</td>
+                            <td>{{ brewery.city }}, {{ brewery.state }}</td>
+                            <td>{{ brewery.average_rating }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No results found.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('tr[data-url]');
+            rows.forEach(row => {
+                row.addEventListener('click', function() {
+                    window.location = this.dataset.url;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
